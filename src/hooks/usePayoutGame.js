@@ -11,21 +11,54 @@ export function usePayoutGame(user) {
   );
 
   const openGames = games.filter(
-  (game) => game.status !== 'finalized'
-);
+    (game) => game.status !== 'finalized'
+  );
 
-const finalizedGames = games.filter(
-  (game) => game.status === 'finalized'
-);
+  const finalizedGames = games.filter(
+    (game) => game.status === 'finalized'
+  );
 
   const finalized =
     selectedGame?.status === 'finalized';
 
+  // -------------------------
+  // LOAD GAMES
+  // -------------------------
+
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
+
+    async function loadGames() {
+      const { data, error } = await supabase
+        .from('poker_games')
+        .select('*')
+        .eq('created_by', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Game load error:', error);
+        return;
+      }
+
+      setGames(data || []);
+
+      const firstOpenGame = data?.find(
+        (game) => game.status !== 'finalized'
+      );
+
+      if (firstOpenGame) {
+        setSelectedGameId((current) =>
+          current || firstOpenGame.id
+        );
+      }
+    }
 
     loadGames();
-  }, [user]);
+  }, [user?.id]);
+
+  // -------------------------
+  // LOAD PLAYERS
+  // -------------------------
 
   useEffect(() => {
     if (!selectedGameId) {
@@ -33,85 +66,27 @@ const finalizedGames = games.filter(
       return;
     }
 
+    async function loadPlayers() {
+      const { data, error } = await supabase
+        .from('poker_game_players')
+        .select('*')
+        .eq('game_id', selectedGameId)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Player load error:', error);
+        return;
+      }
+
+      setPlayers(data || []);
+    }
+
     loadPlayers();
   }, [selectedGameId]);
 
-  async function loadGames() {
-    const { data, error } = await supabase
-      .from('poker_games')
-      .select('*')
-      .eq('created_by', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Game load error:', error);
-      return;
-    }
-
-    setGames(data || []);
-
-    const firstOpenGame = data?.find(
-        (game) => game.status !== 'finalized'
-        );
-
-        if (firstOpenGame && !selectedGameId) {
-            setSelectedGameId(firstOpenGame.id);
-        }
-  }
-
-  async function editPlayer(id, updates) {
-  if (finalized) return false;
-
-  const buyinNumber = Number(updates.buyin);
-  const cashoutNumber = Number(updates.cashout);
-
-  if (
-    Number.isNaN(buyinNumber) ||
-    Number.isNaN(cashoutNumber)
-  ) {
-    return false;
-  }
-
-  const { data, error } = await supabase
-    .from('poker_game_players')
-    .update({
-      name: updates.name.trim(),
-      buyin: buyinNumber,
-      cashout: cashoutNumber,
-    })
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Edit player error:', error);
-    alert(error.message);
-    return false;
-  }
-
-  setPlayers((prev) =>
-    prev.map((player) =>
-      player.id === id ? data : player
-    )
-  );
-
-  return true;
-}
-
-  async function loadPlayers() {
-    const { data, error } = await supabase
-      .from('poker_game_players')
-      .select('*')
-      .eq('game_id', selectedGameId)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('Player load error:', error);
-      return;
-    }
-
-    setPlayers(data || []);
-  }
+  // -------------------------
+  // CREATE GAME
+  // -------------------------
 
   async function createGame({
     gameName,
@@ -143,6 +118,10 @@ const finalizedGames = games.filter(
 
     return true;
   }
+
+  // -------------------------
+  // ADD PLAYER
+  // -------------------------
 
   async function addPlayer({
     name,
@@ -190,6 +169,53 @@ const finalizedGames = games.filter(
     return true;
   }
 
+  // -------------------------
+  // EDIT PLAYER
+  // -------------------------
+
+  async function editPlayer(id, updates) {
+    if (finalized) return false;
+
+    const buyinNumber = Number(updates.buyin);
+    const cashoutNumber = Number(updates.cashout);
+
+    if (
+      Number.isNaN(buyinNumber) ||
+      Number.isNaN(cashoutNumber)
+    ) {
+      return false;
+    }
+
+    const { data, error } = await supabase
+      .from('poker_game_players')
+      .update({
+        name: updates.name.trim(),
+        buyin: buyinNumber,
+        cashout: cashoutNumber,
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Edit player error:', error);
+      alert(error.message);
+      return false;
+    }
+
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.id === id ? data : player
+      )
+    );
+
+    return true;
+  }
+
+  // -------------------------
+  // DELETE PLAYER
+  // -------------------------
+
   async function deletePlayer(id) {
     if (finalized) return;
 
@@ -207,6 +233,10 @@ const finalizedGames = games.filter(
       prev.filter((player) => player.id !== id)
     );
   }
+
+  // -------------------------
+  // TOGGLE SETTLED
+  // -------------------------
 
   async function toggleSettled(player) {
     const newValue = !player.settled;
@@ -231,6 +261,10 @@ const finalizedGames = games.filter(
       )
     );
   }
+
+  // -------------------------
+  // CALCULATIONS
+  // -------------------------
 
   const calculatedPlayers = useMemo(() => {
     return players.map((player) => ({
@@ -278,6 +312,10 @@ const finalizedGames = games.filter(
         player.net === 0 || player.settled
     );
 
+  // -------------------------
+  // SHARE CODE
+  // -------------------------
+
   function generateShareCode() {
     return Math.random()
       .toString(36)
@@ -285,87 +323,93 @@ const finalizedGames = games.filter(
       .toUpperCase();
   }
 
-  async function finalizeGame() {
-  if (!selectedGame) return false;
+  // -------------------------
+  // FINALIZE GAME
+  // -------------------------
 
-  if (!balanced) {
-    alert(
-      `The game is off by $${Math.abs(difference).toFixed(
-        2
-      )}. Fix the totals before finalizing.`
+  async function finalizeGame() {
+    if (!selectedGame) return false;
+
+    if (!balanced) {
+      alert(
+        `The game is off by $${Math.abs(
+          difference
+        ).toFixed(2)}. Fix the totals before finalizing.`
+      );
+
+      return false;
+    }
+
+    if (players.length < 2) {
+      alert(
+        'Add at least two players before finalizing.'
+      );
+
+      return false;
+    }
+
+    const shareCode =
+      selectedGame.share_code ||
+      generateShareCode();
+
+    const { data, error } = await supabase
+      .from('poker_games')
+      .update({
+        status: 'finalized',
+        share_code: shareCode,
+        finalized_at:
+          new Date().toISOString(),
+      })
+      .eq('id', selectedGame.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Finalize error:', error);
+      alert(error.message);
+      return false;
+    }
+
+    setGames((prev) =>
+      prev.map((game) =>
+        game.id === data.id ? data : game
+      )
     );
 
-    return false;
+    setSelectedGameId(null);
+    setPlayers([]);
+
+    return true;
   }
-
-  if (players.length < 2) {
-    alert('Add at least two players before finalizing.');
-    return false;
-  }
-
-  const shareCode =
-    selectedGame.share_code || generateShareCode();
-
-  const { data, error } = await supabase
-    .from('poker_games')
-    .update({
-      status: 'finalized',
-      share_code: shareCode,
-      finalized_at: new Date().toISOString(),
-    })
-    .eq('id', selectedGame.id)
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Finalize error:', error);
-    alert(error.message);
-    return false;
-  }
-
-  // Update game in local state
-  setGames((prev) =>
-    prev.map((game) =>
-      game.id === data.id ? data : game
-    )
-  );
-
-  // IMPORTANT:
-  // Clear the active settlement completely
-  setSelectedGameId(null);
-  setPlayers([]);
-
-  return true;
-}
 
   return {
-  games,
-  openGames,
-  finalizedGames,
+    games,
+    openGames,
+    finalizedGames,
 
-  selectedGameId,
-  setSelectedGameId,
+    selectedGameId,
+    setSelectedGameId,
 
-  selectedGame,
-  finalized,
+    selectedGame,
+    finalized,
 
-  calculatedPlayers,
+    calculatedPlayers,
 
-  winners,
-  losers,
-  leaderboard,
+    winners,
+    losers,
+    leaderboard,
 
-  totalBuyins,
-  totalCashouts,
-  difference,
-  balanced,
-  allSettled,
+    totalBuyins,
+    totalCashouts,
+    difference,
+    balanced,
+    allSettled,
 
-  createGame,
-  addPlayer,
-  editPlayer,
-  deletePlayer,
-  toggleSettled,
-  finalizeGame,
-};
+    createGame,
+    addPlayer,
+    editPlayer,
+    deletePlayer,
+    toggleSettled,
+    finalizeGame,
+  };
 }

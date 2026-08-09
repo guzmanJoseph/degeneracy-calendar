@@ -660,3 +660,64 @@
     opacity: 1;
   }
 }
+
+.shared-loading {
+  min-height: 70vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  color: #7f8c86;
+
+  position: relative;
+  z-index: 1;
+}
+
+.shared-loading-logo {
+  width: 58px;
+  height: 58px;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(
+      0 12px 26px
+      rgba(0, 245, 155, 0.22)
+    );
+
+  animation:
+    sharedLogoFloat
+    2.8s ease-in-out infinite;
+}
+
+.shared-error strong {
+  display: block;
+
+  margin-top: 12px;
+
+  color: #ff526d;
+
+  font-size: 17px;
+}
+
+.shared-error p {
+  margin: 6px 0 0;
+
+  color: #7f8c86;
+
+  font-size: 12px;
+}
+
+.shared-no-results {
+  padding: 26px 12px;
+
+  text-align: center;
+
+  color: #7f8c86;
+
+  font-size: 11px;
+}
