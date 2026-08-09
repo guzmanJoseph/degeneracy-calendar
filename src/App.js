@@ -6,6 +6,9 @@ import Auth from './Auth';
 
 import { useData } from './hooks/useData';
 
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import About from './pages/About';
+
 import Dashboard from './pages/Dashboard';
 import Poker from './pages/Poker';
 import Calendar from './pages/Calendar';
@@ -14,8 +17,14 @@ import Friends from './pages/Friends';
 import Groups from './pages/Groups';
 import Payouts from './pages/Payouts';
 import SharedGame from './pages/SharedGame';
+import Settings from './pages/Settings';
 
 import AddModal from './components/AddModal';
+
+
+/* =========================================
+   MAIN NAVIGATION
+========================================= */
 
 const NAV = [
   {
@@ -50,17 +59,22 @@ const NAV = [
   },
 ];
 
-/* --------------------------------
+
+/* =========================================
    READ URL
--------------------------------- */
+========================================= */
 
 const pathParts = window.location.pathname
   .split('/')
   .filter(Boolean);
 
-/* Public game result link:
+
+/* -----------------------------------------
+   PUBLIC GAME RESULT
+
+   Example:
    /game/ABC123
-*/
+----------------------------------------- */
 
 const isSharedGame =
   pathParts[0] === 'game' &&
@@ -71,9 +85,13 @@ const sharedGameCode =
     ? pathParts[1]
     : null;
 
-/* Group invitation:
+
+/* -----------------------------------------
+   GROUP INVITATION
+
+   Example:
    /join/GROUP_ID
-*/
+----------------------------------------- */
 
 const isGroupInvite =
   pathParts[0] === 'join' &&
@@ -84,18 +102,40 @@ const invitedGroupId =
     ? pathParts[1]
     : null;
 
+
+/* =========================================
+   APP
+========================================= */
+
 export default function App() {
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] =
+    useState(null);
 
-  const [tab, setTab] = useState('dashboard');
+  const [loading, setLoading] =
+    useState(true);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState(null);
+  const [tab, setTab] =
+    useState('dashboard');
 
-  const [joiningGroup, setJoiningGroup] = useState(false);
-  const [joinError, setJoinError] = useState('');
+  const [previousTab, setPreviousTab] =
+    useState('dashboard');
+
+  const [modalOpen, setModalOpen] =
+    useState(false);
+
+  const [editingEntry, setEditingEntry] =
+    useState(null);
+
+  const [joiningGroup, setJoiningGroup] =
+    useState(false);
+
+  const [joinError, setJoinError] =
+    useState('');
+
+
+  /* =========================================
+     DATA
+  ========================================= */
 
   const {
     data,
@@ -104,9 +144,10 @@ export default function App() {
     editPoker,
   } = useData(session?.user);
 
-  /* --------------------------------
+
+  /* =========================================
      AUTH
-  -------------------------------- */
+  ========================================= */
 
   useEffect(() => {
     supabase.auth
@@ -128,9 +169,10 @@ export default function App() {
     };
   }, []);
 
-  /* --------------------------------
+
+  /* =========================================
      GROUP INVITE
-  -------------------------------- */
+  ========================================= */
 
   useEffect(() => {
     if (!session?.user) return;
@@ -142,10 +184,10 @@ export default function App() {
       setJoiningGroup(true);
       setJoinError('');
 
-      /*
-        First check whether this user
-        already belongs to the group.
-      */
+
+      /* -------------------------------------
+         CHECK EXISTING MEMBERSHIP
+      ------------------------------------- */
 
       const {
         data: existingMembership,
@@ -153,8 +195,14 @@ export default function App() {
       } = await supabase
         .from('group_members')
         .select('group_id')
-        .eq('group_id', invitedGroupId)
-        .eq('user_id', session.user.id)
+        .eq(
+          'group_id',
+          invitedGroupId
+        )
+        .eq(
+          'user_id',
+          session.user.id
+        )
         .maybeSingle();
 
       if (cancelled) return;
@@ -166,10 +214,10 @@ export default function App() {
         );
       }
 
-      /*
-        If they are NOT already a member,
-        add them.
-      */
+
+      /* -------------------------------------
+         JOIN GROUP IF NEEDED
+      ------------------------------------- */
 
       if (!existingMembership) {
         const { error } = await supabase
@@ -193,16 +241,15 @@ export default function App() {
           );
 
           setJoiningGroup(false);
+
           return;
         }
       }
 
-      /*
-        Join succeeded.
 
-        Open Groups and clean the
-        /join/... URL from the browser.
-      */
+      /* -------------------------------------
+         SUCCESS
+      ------------------------------------- */
 
       setTab('groups');
 
@@ -222,15 +269,16 @@ export default function App() {
     };
   }, [session?.user]);
 
-  /* --------------------------------
-     MODALS
-  -------------------------------- */
 
-  function resetModals() {
+  /* =========================================
+     MODAL HELPERS
+  ========================================= */
+
+  function resetModal() {
     setModalOpen(false);
-    setSettingsOpen(false);
     setEditingEntry(null);
   }
+
 
   function handleSubmit(entry) {
     const {
@@ -249,18 +297,78 @@ export default function App() {
       addPoker(entry);
     }
 
-    resetModals();
+    resetModal();
   }
+
+
+  /* =========================================
+     LOGOUT
+  ========================================= */
 
   async function handleLogout() {
     await supabase.auth.signOut();
 
-    resetModals();
+    resetModal();
+
+    setTab('dashboard');
   }
 
-  /* --------------------------------
+
+  /* =========================================
+     REFRESH SESSION
+  ========================================= */
+
+  async function refreshSession() {
+    const {
+      data: {
+        session: nextSession,
+      },
+    } = await supabase.auth.getSession();
+
+    setSession(nextSession);
+  }
+
+
+  /* =========================================
+     SETTINGS NAVIGATION
+  ========================================= */
+
+  function openSettings() {
+    if (
+      ![
+        'settings',
+        'privacy',
+        'about',
+      ].includes(tab)
+    ) {
+      setPreviousTab(tab);
+    }
+
+    setTab('settings');
+  }
+
+
+  function closeSettings() {
+    setTab(
+      previousTab || 'dashboard'
+    );
+  }
+
+
+  /* =========================================
+     UTILITY PAGE CHECK
+  ========================================= */
+
+  const isUtilityPage = [
+    'settings',
+    'privacy',
+    'about',
+  ].includes(tab);
+
+
+  /* =========================================
      PUBLIC SHARED GAME
-  -------------------------------- */
+  ========================================= */
 
   if (isSharedGame) {
     return (
@@ -270,9 +378,10 @@ export default function App() {
     );
   }
 
-  /* --------------------------------
+
+  /* =========================================
      INITIAL LOADING
-  -------------------------------- */
+  ========================================= */
 
   if (loading) {
     return (
@@ -282,23 +391,19 @@ export default function App() {
     );
   }
 
-  /* --------------------------------
+
+  /* =========================================
      NOT LOGGED IN
-
-     IMPORTANT:
-     We DO NOT remove /join/... here.
-
-     This means the invite survives
-     login/signup.
-  -------------------------------- */
+  ========================================= */
 
   if (!session) {
     return <Auth />;
   }
 
-  /* --------------------------------
+
+  /* =========================================
      JOINING FROM INVITE
-  -------------------------------- */
+  ========================================= */
 
   if (joiningGroup) {
     return (
@@ -324,9 +429,10 @@ export default function App() {
     );
   }
 
-  /* --------------------------------
+
+  /* =========================================
      INVITE ERROR
-  -------------------------------- */
+  ========================================= */
 
   if (joinError) {
     return (
@@ -356,6 +462,7 @@ export default function App() {
             );
 
             setJoinError('');
+
             setTab('groups');
           }}
         >
@@ -365,50 +472,65 @@ export default function App() {
     );
   }
 
-  /* --------------------------------
+
+  /* =========================================
      MAIN APP
-  -------------------------------- */
+  ========================================= */
 
   return (
     <div className="app-shell">
-      {/* TOP BAR */}
 
-      <div className="top-bar">
-        <div className="app-title">
-          <img
-            src="/stacked.png"
-            alt="Stacked logo"
-            className="nav-logo"
-          />
 
-          <span>
-            Stacked
-          </span>
+      {/* =====================================
+          TOP BAR
+      ===================================== */}
+
+      {!isUtilityPage && (
+        <div className="top-bar">
+          <div className="app-title">
+            <img
+              src="/stacked.png"
+              alt="Stacked logo"
+              className="nav-logo"
+            />
+
+            <span>
+              Stacked
+            </span>
+          </div>
+
+          <button
+            className="settings-btn"
+            type="button"
+            onClick={openSettings}
+            aria-label="Open settings"
+          >
+            <i
+              className="ti ti-settings"
+              aria-hidden="true"
+            />
+          </button>
         </div>
+      )}
 
-        <button
-          className="settings-btn"
-          type="button"
-          onClick={() =>
-            setSettingsOpen(true)
-          }
-          aria-label="Open settings"
-        >
-          <i
-            className="ti ti-settings"
-            aria-hidden="true"
-          />
-        </button>
-      </div>
 
-      {/* PAGE CONTENT */}
+      {/* =====================================
+          PAGE CONTENT
+      ===================================== */}
 
       <main className="main">
+
+
+        {/* DASHBOARD */}
+
         {tab === 'dashboard' && (
           <Dashboard
             data={data}
           />
         )}
+
+
+        {/* POKER */}
 
         {tab === 'poker' && (
           <Poker
@@ -425,11 +547,17 @@ export default function App() {
           />
         )}
 
+
+        {/* PAYOUTS */}
+
         {tab === 'payouts' && (
           <Payouts
             user={session.user}
           />
         )}
+
+
+        {/* LEADERBOARD */}
 
         {tab === 'leaderboard' && (
           <Leaderboard
@@ -437,11 +565,17 @@ export default function App() {
           />
         )}
 
+
+        {/* FRIENDS */}
+
         {tab === 'friends' && (
           <Friends
             user={session.user}
           />
         )}
+
+
+        {/* GROUPS */}
 
         {tab === 'groups' && (
           <Groups
@@ -449,23 +583,72 @@ export default function App() {
           />
         )}
 
+
+        {/* CALENDAR */}
+
         {tab === 'calendar' && (
           <Calendar
             poker={data.poker}
           />
         )}
+
+
+        {/* SETTINGS */}
+
+        {tab === 'settings' && (
+          <Settings
+            user={session.user}
+            onBack={closeSettings}
+            onLogout={handleLogout}
+            onUsernameUpdated={
+              refreshSession
+            }
+            onPrivacy={() =>
+              setTab('privacy')
+            }
+            onAbout={() =>
+              setTab('about')
+            }
+          />
+        )}
+
+
+        {/* PRIVACY */}
+
+        {tab === 'privacy' && (
+          <PrivacyPolicy
+            onBack={() =>
+              setTab('settings')
+            }
+          />
+        )}
+
+
+        {/* ABOUT */}
+
+        {tab === 'about' && (
+          <About
+            onBack={() =>
+              setTab('settings')
+            }
+          />
+        )}
       </main>
 
-      {/* ADD SESSION BUTTON */}
+
+      {/* =====================================
+          FLOATING ADD BUTTON
+      ===================================== */}
 
       {!modalOpen &&
-        !settingsOpen && (
+        !isUtilityPage && (
           <div className="fab-stack">
             <button
               className="fab"
               type="button"
               onClick={() => {
                 setEditingEntry(null);
+
                 setModalOpen(true);
               }}
               aria-label="Add poker session"
@@ -478,107 +661,59 @@ export default function App() {
           </div>
         )}
 
-      {/* BOTTOM NAV */}
 
-      <nav
-        className="bottom-nav"
-        aria-label="Main navigation"
-      >
-        {NAV.map((n) => (
-          <button
-            key={n.id}
-            className={`nav-btn${
-              tab === n.id
-                ? ' active'
-                : ''
-            }`}
-            type="button"
-            onClick={() =>
-              setTab(n.id)
-            }
-            aria-current={
-              tab === n.id
-                ? 'page'
-                : undefined
-            }
-          >
-            <i
-              className={`ti ${n.icon}`}
-              aria-hidden="true"
-            />
+      {/* =====================================
+          BOTTOM NAVIGATION
+      ===================================== */}
 
-            <span>
-              {n.label}
-            </span>
-          </button>
-        ))}
-      </nav>
+      {!isUtilityPage && (
+        <nav
+          className="bottom-nav"
+          aria-label="Main navigation"
+        >
+          {NAV.map((n) => (
+            <button
+              key={n.id}
+              className={`nav-btn${
+                tab === n.id
+                  ? ' active'
+                  : ''
+              }`}
+              type="button"
+              onClick={() =>
+                setTab(n.id)
+              }
+              aria-current={
+                tab === n.id
+                  ? 'page'
+                  : undefined
+              }
+            >
+              <i
+                className={`ti ${n.icon}`}
+                aria-hidden="true"
+              />
 
-      {/* ADD / EDIT SESSION */}
+              <span>
+                {n.label}
+              </span>
+            </button>
+          ))}
+        </nav>
+      )}
+
+
+      {/* =====================================
+          ADD / EDIT SESSION MODAL
+      ===================================== */}
 
       {modalOpen && (
         <AddModal
           user={session.user}
           initialBet={editingEntry}
           onSubmit={handleSubmit}
-          onClose={resetModals}
+          onClose={resetModal}
         />
-      )}
-
-      {/* SETTINGS */}
-
-      {settingsOpen && (
-        <div
-          className="settings-overlay"
-          onClick={() =>
-            setSettingsOpen(false)
-          }
-        >
-          <div
-            className="settings-sheet"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
-            <div className="sheet-handle" />
-
-            <h3>
-              Settings
-            </h3>
-
-            <button
-              className="settings-item"
-              type="button"
-              onClick={handleLogout}
-            >
-              <i
-                className="ti ti-logout"
-                aria-hidden="true"
-              />
-
-              <span>
-                Sign Out
-              </span>
-            </button>
-
-            <button
-              className="settings-item"
-              type="button"
-              onClick={() =>
-                setSettingsOpen(false)
-              }
-            >
-              <i
-                className="ti ti-x"
-                aria-hidden="true"
-              />
-
-              <span>
-                Close
-              </span>
-            </button>
-          </div>
-        </div>
       )}
     </div>
   );

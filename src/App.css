@@ -42,6 +42,8 @@
 
   overflow-x: hidden;
 
+  padding-top: 68px;
+
   padding-bottom:
     calc(82px + env(safe-area-inset-bottom));
 
@@ -53,20 +55,22 @@
 /* =========================================
    TOP BAR
 ========================================= */
-
 .top-bar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
 
   z-index: 1000;
 
   width: 100%;
+  max-width: 480px;
   height: 68px;
 
   box-sizing: border-box;
 
   padding: 0 18px;
-  padding-top: env(safe-area-inset-top);
 
   display: flex;
   align-items: center;
@@ -79,9 +83,7 @@
 
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.03),
-    0 10px 30px rgba(0, 0, 0, 0.35);
-
-  flex-shrink: 0;
+    0 8px 25px rgba(0, 0, 0, 0.28);
 }
 
 
