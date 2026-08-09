@@ -42,7 +42,8 @@
 
   overflow-x: hidden;
 
-  padding-top: 68px;
+  padding-top:
+    calc(62px + env(safe-area-inset-top));
 
   padding-bottom:
     calc(82px + env(safe-area-inset-bottom));
@@ -57,20 +58,26 @@
 ========================================= */
 .top-bar {
   position: fixed;
+
   top: 0;
   left: 50%;
-
   transform: translateX(-50%);
 
   z-index: 1000;
 
   width: 100%;
   max-width: 480px;
-  height: 68px;
+
+  /* 62px header + iPhone status bar */
+  height: calc(62px + env(safe-area-inset-top));
 
   box-sizing: border-box;
 
-  padding: 0 18px;
+  padding-left: 18px;
+  padding-right: 18px;
+
+  /* pushes Stacked + gear below the clock/notch */
+  padding-top: env(safe-area-inset-top);
 
   display: flex;
   align-items: center;
