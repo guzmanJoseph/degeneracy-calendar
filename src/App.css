@@ -1,334 +1,989 @@
-.app {
+/* =========================================
+   APP SHELL
+========================================= */
+
+.app-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+
+  width: 100%;
   max-width: 480px;
+  min-height: 100dvh;
+
   margin: 0 auto;
+
   position: relative;
+
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.035), transparent 26%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      transparent 26%
+    ),
     rgba(5, 5, 9, 0.92);
+
   isolation: isolate;
+
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05),
-    0 40px 120px rgba(0,0,0,0.55);
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 40px 120px rgba(0, 0, 0, 0.55);
 }
+
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
 
 .main {
   flex: 1;
+
+  width: 100%;
+  box-sizing: border-box;
+
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: calc(82px + env(safe-area-inset-bottom));
+
+  padding-bottom:
+    calc(82px + env(safe-area-inset-bottom));
+
   -webkit-overflow-scrolling: touch;
+
   position: relative;
   z-index: 1;
 }
 
+
+/* =========================================
+   TOP BAR
+========================================= */
+
 .top-bar {
   position: sticky;
   top: 0;
+
   z-index: 100;
+
+  width: 100%;
   height: 66px;
+
+  box-sizing: border-box;
+
   padding: 0 18px;
   padding-top: env(safe-area-inset-top);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   background: rgba(5, 5, 9, 0.72);
-  backdrop-filter: blur(26px) saturate(1.5);
-  -webkit-backdrop-filter: blur(26px) saturate(1.5);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter:
+    blur(26px)
+    saturate(1.5);
+
+  -webkit-backdrop-filter:
+    blur(26px)
+    saturate(1.5);
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.08);
 }
+
+
+/* =========================================
+   APP TITLE
+========================================= */
 
 .app-title {
   display: flex;
   align-items: center;
   gap: 10px;
+
   font-weight: 900;
+
   color: var(--text);
+
   letter-spacing: -0.4px;
 }
 
 .nav-logo {
   width: 38px;
   height: 38px;
+
   object-fit: contain;
-  filter: drop-shadow(0 8px 18px rgba(0,245,155,0.22));
-  animation: logoFloat 3.8s ease-in-out infinite;
+
+  filter:
+    drop-shadow(
+      0 8px 18px rgba(0, 245, 155, 0.22)
+    );
+
+  animation:
+    logoFloat 3.8s ease-in-out infinite;
 }
 
 @keyframes logoFloat {
-  0%, 100% { transform: translateY(0) rotate(-1deg); }
-  50% { transform: translateY(-3px) rotate(1deg); }
+  0%,
+  100% {
+    transform:
+      translateY(0)
+      rotate(-1deg);
+  }
+
+  50% {
+    transform:
+      translateY(-3px)
+      rotate(1deg);
+  }
 }
+
+
+/* =========================================
+   SETTINGS BUTTON
+========================================= */
 
 .settings-btn {
   width: 42px;
   height: 42px;
+
   display: grid;
   place-items: center;
+
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035));
-  border: 1px solid var(--border-strong);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.09),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border:
+    1px solid var(--border-strong);
+
   color: var(--muted);
+
   font-size: 19px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 26px rgba(0,0,0,0.22);
-  transition: transform 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 26px rgba(0, 0, 0, 0.22);
+
+  transition:
+    transform 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+
+  cursor: pointer;
 }
 
 .settings-btn:hover {
   color: var(--text);
-  border-color: rgba(0,245,155,0.35);
+
+  border-color:
+    rgba(0, 245, 155, 0.35);
+
   transform: translateY(-1px);
 }
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
 
 .bottom-nav {
   display: flex;
   gap: 6px;
-  background: rgba(6, 7, 12, 0.82);
-  backdrop-filter: blur(28px) saturate(1.6);
-  -webkit-backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid rgba(255,255,255,0.09);
+
   position: fixed;
+
+  left: 50%;
+  transform: translateX(-50%);
+
   bottom: 12px;
-  left: 12px;
-  right: 12px;
+
+  width: calc(100% - 24px);
   max-width: 456px;
-  margin: 0 auto;
+
+  box-sizing: border-box;
+
   z-index: 50;
+
   padding: 8px;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  padding-bottom:
+    calc(8px + env(safe-area-inset-bottom));
+
   border-radius: 26px;
-  box-shadow: 0 22px 60px rgba(0,0,0,0.45);
+
+  background:
+    rgba(6, 7, 12, 0.82);
+
+  backdrop-filter:
+    blur(28px)
+    saturate(1.6);
+
+  -webkit-backdrop-filter:
+    blur(28px)
+    saturate(1.6);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.09);
+
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.45);
 }
+
+
+/* =========================================
+   NAV BUTTON
+========================================= */
 
 .nav-btn {
   flex: 1;
   min-width: 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 4px;
+
   padding: 9px 4px;
+
+  border: none;
   border-radius: 18px;
+
+  background: transparent;
+
+  color: var(--muted);
+
   font-size: 10px;
   font-weight: 700;
-  color: var(--muted);
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+
   position: relative;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .nav-btn i {
   font-size: 21px;
-  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+
+  transition:
+    transform 0.22s
+      cubic-bezier(
+        0.34,
+        1.56,
+        0.64,
+        1
+      );
 }
 
 .nav-btn.active {
   color: var(--green);
+
   background:
-    radial-gradient(circle at 50% 0%, rgba(0,245,155,0.22), transparent 65%),
-    rgba(0,245,155,0.08);
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(0, 245, 155, 0.22),
+      transparent 65%
+    ),
+    rgba(0, 245, 155, 0.08);
 }
 
 .nav-btn.active i {
-  transform: translateY(-3px) scale(1.12);
-  filter: drop-shadow(0 0 12px rgba(0,245,155,0.5));
+  transform:
+    translateY(-3px)
+    scale(1.12);
+
+  filter:
+    drop-shadow(
+      0 0 12px rgba(0, 245, 155, 0.5)
+    );
 }
+
+
+/* =========================================
+   FLOATING ADD BUTTON
+========================================= */
 
 .fab-stack {
   position: fixed;
-  right: 20px;
-  bottom: calc(104px + env(safe-area-inset-bottom));
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  bottom:
+    calc(
+      104px +
+      env(safe-area-inset-bottom)
+    );
+
+  width: 100%;
+  max-width: 480px;
+
+  padding: 0 20px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: flex-end;
+
+  pointer-events: none;
+
   z-index: 9999;
 }
 
 .fab {
+  pointer-events: auto;
+
   width: 58px;
   height: 58px;
+
+  border: none;
   border-radius: 22px;
+
   background:
-    linear-gradient(145deg, #3dffd0, var(--green) 45%, #00ad65);
+    linear-gradient(
+      145deg,
+      #3dffd0,
+      var(--green) 45%,
+      #00ad65
+    );
+
   color: #02140c;
+
   display: grid;
   place-items: center;
+
   font-size: 26px;
+
+  cursor: pointer;
+
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.18) inset,
-    0 12px 26px rgba(0,245,155,0.28),
-    0 24px 70px rgba(0,0,0,0.5);
-  transform: perspective(800px) rotateX(8deg) rotateY(-8deg);
-  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease;
+    inset 0 0 0 1px
+      rgba(255, 255, 255, 0.18),
+    0 12px 26px
+      rgba(0, 245, 155, 0.28),
+    0 24px 70px
+      rgba(0, 0, 0, 0.5);
+
+  transform:
+    perspective(800px)
+    rotateX(8deg)
+    rotateY(-8deg);
+
+  transition:
+    transform 0.22s
+      cubic-bezier(
+        0.34,
+        1.56,
+        0.64,
+        1
+      ),
+    box-shadow 0.22s ease;
 }
 
 .fab:hover {
-  transform: perspective(800px) rotateX(0) rotateY(0) translateY(-4px) scale(1.03);
+  transform:
+    perspective(800px)
+    rotateX(0)
+    rotateY(0)
+    translateY(-4px)
+    scale(1.03);
 }
 
 .fab:active {
   transform: scale(0.94);
 }
 
+
+/* =========================================
+   AUTH PAGE
+========================================= */
+
 .auth-page {
   min-height: 100vh;
+
   display: grid;
   place-items: center;
+
   padding: 24px;
+
   background:
-    radial-gradient(circle at 50% 0%, rgba(0,245,155,0.16), transparent 42%),
-    radial-gradient(circle at 100% 100%, rgba(85,167,255,0.12), transparent 40%),
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(0, 245, 155, 0.16),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(85, 167, 255, 0.12),
+      transparent 40%
+    ),
     #050509;
 }
 
 .auth-card {
   width: 100%;
   max-width: 390px;
+
   padding: 32px 26px;
+
+  box-sizing: border-box;
+
   text-align: center;
+
   border-radius: 34px;
+
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035));
-  border: 1px solid rgba(255,255,255,0.14);
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.09),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border:
+    1px solid rgba(255, 255, 255, 0.14);
+
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    0 32px 100px rgba(0,0,0,0.62);
-  transform: perspective(900px) rotateX(1deg);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 32px 100px rgba(0, 0, 0, 0.62);
+
+  transform:
+    perspective(900px)
+    rotateX(1deg);
 }
 
 .app-logo {
   width: 135px;
   max-width: 56%;
   height: auto;
+
   display: block;
-  margin: 0 auto 18px;
+
+  margin:
+    0 auto 18px;
+
   object-fit: contain;
-  filter: drop-shadow(0 16px 24px rgba(0,0,0,0.45));
+
+  filter:
+    drop-shadow(
+      0 16px 24px rgba(0, 0, 0, 0.45)
+    );
 }
 
 .auth-card h1 {
   font-size: 31px;
   font-weight: 900;
+
   letter-spacing: -1px;
 }
 
 .auth-subtitle {
   color: var(--muted);
-  margin: 8px 0 24px;
+
+  margin:
+    8px 0 24px;
+
   line-height: 1.45;
+
   font-size: 14px;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 }
 
 .auth-card input {
   width: 100%;
+
+  box-sizing: border-box;
+
   padding: 15px 16px;
+
   border-radius: 18px;
-  border: 1px solid var(--border-strong);
-  background: rgba(0,0,0,0.22);
+
+  border:
+    1px solid var(--border-strong);
+
+  background:
+    rgba(0, 0, 0, 0.22);
+
   color: var(--text);
+
   outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .auth-card input:focus {
-  border-color: rgba(0,245,155,0.55);
-  box-shadow: 0 0 0 4px rgba(0,245,155,0.09);
-  transform: translateY(-1px);
+  border-color:
+    rgba(0, 245, 155, 0.55);
+
+  box-shadow:
+    0 0 0 4px
+      rgba(0, 245, 155, 0.09);
+
+  transform:
+    translateY(-1px);
 }
+
+
+/* =========================================
+   AUTH BUTTONS
+========================================= */
 
 .auth-primary-btn,
 .auth-card button {
   width: 100%;
+
   padding: 15px;
+
+  border: none;
   border-radius: 18px;
+
   font-weight: 900;
-  background: linear-gradient(135deg, #3dffd0, var(--green));
+
+  background:
+    linear-gradient(
+      135deg,
+      #3dffd0,
+      var(--green)
+    );
+
   color: #02140c;
-  box-shadow: 0 14px 35px rgba(0,245,155,0.24);
+
+  cursor: pointer;
+
+  box-shadow:
+    0 14px 35px
+      rgba(0, 245, 155, 0.24);
 }
 
 .auth-switch {
   margin-top: 8px;
-  background: transparent !important;
-  color: var(--muted) !important;
-  box-shadow: none !important;
+
+  background:
+    transparent !important;
+
+  color:
+    var(--muted) !important;
+
+  box-shadow:
+    none !important;
 }
 
 .auth-message {
   margin-top: 12px;
+
   color: var(--muted);
+
   font-size: 13px;
 }
 
+
+/* =========================================
+   INSTALL CARD
+========================================= */
+
 .install-card {
   margin-top: 20px;
+
   padding: 16px;
+
   border-radius: 22px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  border:
+    1px solid var(--border);
+
   text-align: left;
 }
 
 .install-card h3 {
   font-size: 15px;
+
   margin-bottom: 10px;
 }
 
 .install-card p {
   color: var(--muted);
+
   font-size: 13px;
+
   margin: 8px 0;
 }
 
 .install-note {
-  color: var(--green) !important;
+  color:
+    var(--green) !important;
 }
+
+
+/* =========================================
+   SETTINGS OVERLAY
+========================================= */
 
 .settings-overlay {
   position: fixed;
+
   inset: 0;
-  background: rgba(0,0,0,0.64);
-  backdrop-filter: blur(12px);
+
+  background:
+    rgba(0, 0, 0, 0.64);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
   z-index: 9999;
+
   display: flex;
   align-items: flex-end;
+  justify-content: center;
 }
+
+
+/* =========================================
+   SETTINGS SHEET
+========================================= */
 
 .settings-sheet {
   width: 100%;
-  border-radius: 30px 30px 0 0;
-  padding: 14px 20px calc(26px + env(safe-area-inset-bottom));
-  background: rgba(12, 13, 20, 0.96);
-  border-top: 1px solid var(--border-strong);
-  box-shadow: 0 -26px 80px rgba(0,0,0,0.55);
-  animation: sheetUp 0.28s cubic-bezier(0.16,1,0.3,1);
+  max-width: 480px;
+
+  box-sizing: border-box;
+
+  border-radius:
+    30px 30px 0 0;
+
+  padding:
+    14px
+    20px
+    calc(
+      26px +
+      env(safe-area-inset-bottom)
+    );
+
+  background:
+    rgba(12, 13, 20, 0.96);
+
+  border-top:
+    1px solid var(--border-strong);
+
+  box-shadow:
+    0 -26px 80px
+      rgba(0, 0, 0, 0.55);
+
+  animation:
+    sheetUp 0.28s
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
 }
 
 @keyframes sheetUp {
-  from { transform: translateY(70px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform:
+      translateY(70px);
+
+    opacity: 0;
+  }
+
+  to {
+    transform:
+      translateY(0);
+
+    opacity: 1;
+  }
 }
 
 .sheet-handle {
   width: 42px;
   height: 5px;
+
   border-radius: 999px;
-  background: rgba(255,255,255,0.16);
-  margin: 0 auto 18px;
+
+  background:
+    rgba(255, 255, 255, 0.16);
+
+  margin:
+    0 auto 18px;
 }
+
+.settings-sheet h3 {
+  margin:
+    0 0 12px;
+
+  color: var(--text);
+
+  font-size: 19px;
+  font-weight: 900;
+}
+
+
+/* =========================================
+   SETTINGS ITEMS
+========================================= */
 
 .settings-item {
   width: 100%;
+
+  box-sizing: border-box;
+
   display: flex;
   align-items: center;
+
   gap: 12px;
+
   padding: 15px;
+
   border-radius: 18px;
-  background: var(--card);
-  border: 1px solid var(--border);
+
+  background:
+    var(--card);
+
+  border:
+    1px solid var(--border);
+
+  color: var(--text);
+
   margin-top: 10px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.settings-item:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(0, 245, 155, 0.18);
+
+  background:
+    rgba(255, 255, 255, 0.06);
+}
+
+.settings-item i {
+  color: var(--green);
+
+  font-size: 18px;
+}
+
+
+/* =========================================
+   GENERAL LOADING
+========================================= */
+
+.app-loading {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--muted);
+
+  background: #050509;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   GROUP INVITE LOADING / ERROR
+========================================= */
+
+.invite-loading,
+.invite-error-page {
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(0, 245, 155, 0.09),
+      transparent 35%
+    ),
+    #050509;
+
+  color: var(--text);
+}
+
+.invite-loading-logo {
+  width: 58px;
+  height: 58px;
+
+  object-fit: contain;
+
+  margin-bottom: 12px;
+
+  filter:
+    drop-shadow(
+      0 12px 28px
+      rgba(0, 245, 155, 0.15)
+    );
+}
+
+.invite-loading-label {
+  color: var(--green);
+
+  font-size: 11px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1.5px;
+}
+
+.invite-loading h2,
+.invite-error-page h2 {
+  margin:
+    10px 0 5px;
+
+  font-size: 24px;
+  font-weight: 900;
+
+  letter-spacing: -0.8px;
+}
+
+.invite-loading p,
+.invite-error-page p {
+  margin: 0;
+
+  max-width: 300px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.invite-error-btn {
+  margin-top: 18px;
+
+  padding: 11px 16px;
+
+  border:
+    1px solid
+    rgba(0, 245, 155, 0.25);
+
+  border-radius: 14px;
+
+  background:
+    var(--green);
+
+  color: #00160d;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+  .app-shell {
+    max-width: none;
+
+    box-shadow: none;
+
+    border-left: none;
+    border-right: none;
+  }
+
+  .bottom-nav {
+    width:
+      calc(100% - 24px);
+
+    max-width:
+      calc(100% - 24px);
+  }
+
+  .fab-stack {
+    max-width: 100%;
+  }
+
+  .settings-sheet {
+    max-width: 100%;
+  }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 390px) {
+  .top-bar {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .bottom-nav {
+    gap: 3px;
+
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .nav-btn {
+    padding-left: 2px;
+    padding-right: 2px;
+
+    font-size: 9px;
+  }
+
+  .nav-btn i {
+    font-size: 19px;
+  }
+
+  .fab-stack {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .fab {
+    width: 54px;
+    height: 54px;
+
+    border-radius: 20px;
+  }
 }

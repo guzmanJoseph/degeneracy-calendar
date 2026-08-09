@@ -1,0 +1,662 @@
+/* =========================================
+   SHARED GAME PAGE
+========================================= */
+
+.shared-game-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+
+  padding: 26px 16px 56px;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(0, 245, 155, 0.13),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 100% 18%,
+      rgba(79, 141, 247, 0.1),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      #050509 0%,
+      #070a0d 55%,
+      #050509 100%
+    );
+
+  color: #f8fafc;
+
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* subtle animated background glow */
+
+.shared-game-page::before {
+  content: '';
+
+  position: fixed;
+  inset: -30%;
+
+  pointer-events: none;
+
+  background:
+    conic-gradient(
+      from 180deg,
+      transparent,
+      rgba(0, 245, 155, 0.06),
+      transparent 30%,
+      rgba(79, 141, 247, 0.05),
+      transparent 65%
+    );
+
+  animation: sharedGlowSpin 14s linear infinite;
+
+  opacity: 0.9;
+}
+
+@keyframes sharedGlowSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.shared-header {
+  max-width: 520px;
+
+  margin: 0 auto 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  position: relative;
+  z-index: 1;
+
+  animation: sharedFadeDown 0.5s ease both;
+}
+
+.shared-logo {
+  width: 38px;
+  height: 38px;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(
+      0 10px 20px rgba(0, 245, 155, 0.24)
+    );
+
+  animation:
+    sharedLogoFloat 3.5s ease-in-out infinite;
+}
+
+.shared-header span {
+  color: #f8fafc;
+
+  font-size: 18px;
+  font-weight: 900;
+
+  letter-spacing: -0.5px;
+}
+
+@keyframes sharedLogoFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+}
+
+@keyframes sharedFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================
+   HERO CARD
+========================================= */
+
+.shared-card {
+  max-width: 520px;
+
+  margin: 0 auto 16px;
+
+  padding: 24px 20px;
+
+  box-sizing: border-box;
+
+  border-radius: 28px;
+
+  position: relative;
+  z-index: 1;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(0, 245, 155, 0.2),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(79, 141, 247, 0.11),
+      transparent 42%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.095),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border:
+    1px solid rgba(255, 255, 255, 0.13);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 70px rgba(0, 0, 0, 0.38);
+
+  animation:
+    sharedCardIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.shared-card::before {
+  content: '';
+
+  position: absolute;
+  inset: -70px;
+
+  background:
+    conic-gradient(
+      from 90deg,
+      transparent,
+      rgba(0, 245, 155, 0.09),
+      transparent 28%
+    );
+
+  animation:
+    sharedHeroSpin 10s linear infinite;
+
+  pointer-events: none;
+}
+
+.shared-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes sharedHeroSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sharedCardIn {
+  from {
+    opacity: 0;
+    transform:
+      translateY(14px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+.shared-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: rgba(0, 245, 155, 0.82);
+
+  font-size: 10px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.shared-card h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 30px;
+  font-weight: 900;
+
+  letter-spacing: -1.2px;
+}
+
+.shared-card p {
+  margin: 7px 0 0;
+
+  color: #8f9c96;
+
+  font-size: 12px;
+}
+
+.shared-code {
+  display: inline-flex;
+  align-items: center;
+
+  margin-top: 16px;
+
+  padding: 8px 11px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(0, 245, 155, 0.09);
+
+  color: #00f59b;
+
+  border:
+    1px solid rgba(0, 245, 155, 0.16);
+
+  font-family:
+    'JetBrains Mono',
+    monospace;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: 0.6px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+
+/* =========================================
+   LEADERBOARD
+========================================= */
+
+.shared-leaderboard {
+  max-width: 520px;
+
+  margin: 0 auto;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  border-radius: 26px;
+
+  position: relative;
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.065),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  border:
+    1px solid rgba(255, 255, 255, 0.09);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+
+  animation:
+    sharedCardIn 0.6s 0.08s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    both;
+}
+
+.shared-section-title {
+  margin-bottom: 8px;
+
+  color: #7f8c86;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+}
+
+
+/* =========================================
+   ROWS
+========================================= */
+
+.shared-row {
+  display: grid;
+
+  grid-template-columns:
+    42px 1fr auto;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-height: 58px;
+
+  padding: 10px 2px;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.065);
+
+  opacity: 0;
+
+  animation:
+    sharedRowIn 0.5s ease forwards;
+}
+
+.shared-row:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.shared-row:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.shared-row:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+.shared-row:nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+.shared-row:nth-child(6) {
+  animation-delay: 0.38s;
+}
+
+.shared-row:nth-child(7) {
+  animation-delay: 0.44s;
+}
+
+.shared-row:last-child {
+  border-bottom: none;
+}
+
+@keyframes sharedRowIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================================
+   RANK
+========================================= */
+
+.shared-rank {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.07);
+
+  color: #75817b;
+
+  font-family:
+    'JetBrains Mono',
+    monospace;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+/* #1 gets a subtle winner treatment */
+
+.shared-row:nth-child(2)
+.shared-rank {
+  color: #00f59b;
+
+  background:
+    rgba(0, 245, 155, 0.1);
+
+  border-color:
+    rgba(0, 245, 155, 0.18);
+
+  box-shadow:
+    0 0 18px
+    rgba(0, 245, 155, 0.08);
+}
+
+.shared-row > strong:nth-child(2) {
+  color: #f8fafc;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   PNL
+========================================= */
+
+.shared-positive,
+.shared-negative {
+  font-family:
+    'JetBrains Mono',
+    monospace;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  letter-spacing: -0.3px;
+}
+
+.shared-positive {
+  color: #00f59b;
+
+  text-shadow:
+    0 0 18px
+    rgba(0, 245, 155, 0.18);
+}
+
+.shared-negative {
+  color: #ff526d;
+
+  text-shadow:
+    0 0 18px
+    rgba(255, 82, 109, 0.12);
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.shared-footer {
+  max-width: 520px;
+
+  margin: 22px auto 0;
+
+  position: relative;
+  z-index: 1;
+
+  text-align: center;
+
+  color: #5d6964;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.4px;
+
+  animation:
+    sharedFooterIn 0.6s 0.35s ease both;
+}
+
+@keyframes sharedFooterIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* =========================================
+   LOADING / ERROR
+========================================= */
+
+.shared-error {
+  max-width: 420px;
+
+  margin: 100px auto 0;
+
+  padding: 22px;
+
+  text-align: center;
+
+  border-radius: 22px;
+
+  color: #ff526d;
+
+  background:
+    rgba(255, 82, 109, 0.06);
+
+  border:
+    1px solid rgba(255, 82, 109, 0.14);
+
+  position: relative;
+  z-index: 1;
+}
+
+.shared-game-page > p {
+  margin-top: 120px;
+
+  text-align: center;
+
+  color: #73807a;
+
+  font-size: 12px;
+
+  position: relative;
+  z-index: 1;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 520px) {
+  .shared-game-page {
+    padding:
+      22px 14px 48px;
+  }
+
+  .shared-card {
+    padding:
+      21px 18px;
+
+    border-radius: 24px;
+  }
+
+  .shared-card h1 {
+    font-size: 27px;
+  }
+
+  .shared-leaderboard {
+    padding: 16px;
+    border-radius: 23px;
+  }
+
+  .shared-row {
+    grid-template-columns:
+      38px 1fr auto;
+  }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 370px) {
+  .shared-card h1 {
+    font-size: 24px;
+  }
+
+  .shared-row {
+    grid-template-columns:
+      34px 1fr auto;
+
+    gap: 7px;
+  }
+
+  .shared-positive,
+  .shared-negative {
+    font-size: 12px;
+  }
+}
+
+
+/* =========================================
+   REDUCE MOTION
+========================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .shared-game-page::before,
+  .shared-logo,
+  .shared-card::before,
+  .shared-header,
+  .shared-card,
+  .shared-leaderboard,
+  .shared-row,
+  .shared-footer {
+    animation: none !important;
+  }
+
+  .shared-row {
+    opacity: 1;
+  }
+}

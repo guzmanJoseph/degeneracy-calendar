@@ -10,7 +10,28 @@ export function fmtPlain(n) {
 }
 
 export function today() {
-  return new Date().toISOString().split('T')[0];
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
+  const parts = formatter.formatToParts(new Date());
+
+  const values = {};
+
+  for (const part of parts) {
+    if (
+      part.type === 'year' ||
+      part.type === 'month' ||
+      part.type === 'day'
+    ) {
+      values[part.type] = part.value;
+    }
+  }
+
+  return `${values.year}-${values.month}-${values.day}`;
 }
 
 export function buildDailyMap(poker = []) {
