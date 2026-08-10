@@ -13,6 +13,10 @@ export default function Settings({
   const email =
     user?.email || 'No email available';
 
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deletingAccount, setDeletingAccount] = useState(false);
+    const [deleteMessage, setDeleteMessage] = useState('');
+
   const currentUsername =
     user?.user_metadata?.username ||
     user?.user_metadata?.display_name ||
@@ -156,6 +160,34 @@ export default function Settings({
     window.location.href =
         `mailto:jguzmannn05@gmail.com?subject=${subject}&body=${body}`;
     }
+
+    async function handleDeleteAccount() {
+  setDeletingAccount(true);
+  setDeleteMessage('');
+
+  try {
+    const { data, error } =
+      await supabase.functions.invoke('delete-account');
+
+    if (error) {
+      throw error;
+    }
+
+    if (data?.error) {
+      throw new Error(data.error);
+    }
+
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error('Delete account error:', error);
+
+    setDeleteMessage(
+      'Could not delete your account. Please try again.'
+    );
+
+    setDeletingAccount(false);
+  }
+}
 
   return (
     <div className="settings-page">
@@ -381,6 +413,20 @@ export default function Settings({
               </span>
             </div>
           </button>
+
+          <button
+            type="button"
+            className="settings-row settings-danger"
+            onClick={() => setDeleteOpen(true)}
+          >
+            <div className="settings-row-left">
+              <div className="settings-icon">
+                <i className="ti ti-trash" />
+              </div>
+
+              <span>Delete Account</span>
+            </div>
+          </button>
         </div>
       </section>
 
@@ -394,6 +440,65 @@ export default function Settings({
         <span>Stacked</span>
         <small>Version 1.0.0</small>
       </div>
+
+      {deleteOpen && (
+  <div
+    className="delete-account-overlay"
+    onClick={() => {
+      if (!deletingAccount) {
+        setDeleteOpen(false);
+      }
+    }}
+  >
+    <div
+      className="delete-account-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="delete-account-icon">
+        <i className="ti ti-alert-triangle" />
+      </div>
+
+      <h2>Delete your account?</h2>
+
+      <p>
+        This permanently deletes your Stacked
+        account and associated data. This action
+        cannot be undone.
+      </p>
+
+      {deleteMessage && (
+        <p className="delete-account-message">
+          {deleteMessage}
+        </p>
+      )}
+
+          <div className="delete-account-actions">
+            <button
+              type="button"
+              className="delete-cancel-btn"
+              disabled={deletingAccount}
+              onClick={() => {
+                setDeleteOpen(false);
+                setDeleteMessage('');
+              }}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              className="delete-confirm-btn"
+              disabled={deletingAccount}
+              onClick={handleDeleteAccount}
+            >
+              {deletingAccount
+                ? 'Deleting...'
+                : 'Delete Account'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
