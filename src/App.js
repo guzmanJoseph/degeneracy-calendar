@@ -97,6 +97,9 @@ const sharedGameCode =
 const isSupportPage =
   pathParts[0] === 'support';
 
+  const isPrivacyPage =
+  pathParts[0] === 'privacy';
+
 
 /* -----------------------------------------
    GROUP INVITATION
@@ -393,6 +396,11 @@ export default function App() {
   if (isSupportPage) {
     return <Support />;
   }
+
+  if (isPrivacyPage) {
+  return <PrivacyPolicy />;
+}
+
 
 
   /* =========================================
