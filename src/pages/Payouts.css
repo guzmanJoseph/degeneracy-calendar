@@ -1355,3 +1355,274 @@
 .past-game-row {
   min-height: 66px;
 }
+
+/* =========================================
+   PAST GAMES
+========================================= */
+
+.past-games {
+  margin-top: 30px;
+  margin-bottom: 24px;
+}
+
+.past-games-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.past-games-header h2 {
+  margin: 3px 0 0;
+
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 900;
+
+  letter-spacing: -0.4px;
+}
+
+.past-games-header p {
+  margin: 5px 0 0;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+
+/* =========================================
+   LIST
+========================================= */
+
+.past-games-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+
+/* =========================================
+   GAME CARD
+========================================= */
+
+.past-game-row {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.07);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.past-game-row:hover {
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  border-color:
+    rgba(255, 255, 255, 0.1);
+}
+
+
+/* =========================================
+   GAME INFO
+========================================= */
+
+.past-game-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.past-game-info strong {
+  overflow: hidden;
+
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 850;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.past-game-info span {
+  color: var(--muted);
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.past-game-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  flex-shrink: 0;
+}
+
+.past-game-view-btn,
+.past-game-link-btn,
+.past-game-share-btn {
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 0 10px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.12s ease;
+}
+
+.past-game-view-btn i,
+.past-game-link-btn i,
+.past-game-share-btn i {
+  font-size: 13px;
+}
+
+
+/* VIEW */
+
+.past-game-view-btn:hover {
+  background:
+    rgba(255, 255, 255, 0.07);
+}
+
+
+/* COPY */
+
+.past-game-link-btn {
+  color: var(--green);
+
+  background:
+    rgba(0, 245, 155, 0.06);
+
+  border-color:
+    rgba(0, 245, 155, 0.15);
+}
+
+.past-game-link-btn:hover {
+  background:
+    rgba(0, 245, 155, 0.1);
+
+  border-color:
+    rgba(0, 245, 155, 0.25);
+}
+
+
+/* SHARE */
+
+.past-game-share-btn {
+  color: var(--green);
+
+  background:
+    rgba(0, 245, 155, 0.09);
+
+  border-color:
+    rgba(0, 245, 155, 0.2);
+}
+
+.past-game-share-btn:hover {
+  background:
+    rgba(0, 245, 155, 0.14);
+}
+
+
+/* PRESS */
+
+.past-game-view-btn:active,
+.past-game-link-btn:active,
+.past-game-share-btn:active {
+  transform: scale(0.96);
+}
+
+
+/* DISABLED */
+
+.past-game-view-btn:disabled,
+.past-game-link-btn:disabled,
+.past-game-share-btn:disabled {
+  opacity: 0.35;
+
+  cursor: default;
+
+  transform: none;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 430px) {
+  .past-game-row {
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 14px;
+  }
+
+  .past-game-actions {
+    width: 100%;
+
+    margin-top: 4px;
+  }
+
+  .past-game-view-btn,
+  .past-game-link-btn,
+  .past-game-share-btn {
+    flex: 1;
+
+    padding: 0 7px;
+  }
+}
