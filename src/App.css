@@ -996,3 +996,32 @@
     border-radius: 20px;
   }
 }
+
+/* =========================================
+   IOS INPUT ZOOM FIX
+========================================= */
+
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+input[type="number"],
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="search"] {
+  font-size: 16px !important;
+  line-height: 1.25;
+  -webkit-text-size-adjust: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
