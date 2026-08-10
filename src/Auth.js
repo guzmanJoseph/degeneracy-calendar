@@ -67,13 +67,6 @@ export default function Auth() {
         >
           {isSignUp ? "Already have an account? Log in" : "Need an account? Sign up"}
         </button>
-
-        <div className="install-card">
-          <h3>Add this app to your phone</h3>
-          <p><strong>iPhone:</strong> Open this site in Safari, tap Share, then tap <strong>Add to Home Screen</strong>.</p>
-          <p><strong>Android:</strong> Open this site in Chrome, tap the menu, then tap <strong>Install app</strong>.</p>
-          <p className="install-note">After installing, it opens like a normal app.</p>
-        </div>
       </div>
     </div>
   );

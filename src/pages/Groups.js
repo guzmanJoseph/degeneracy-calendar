@@ -8,13 +8,25 @@ import { supabase } from '../supabaseClient';
 import './Dashboard.css';
 
 export default function Groups({ user }) {
-  const [groupName, setGroupName] = useState('');
-  const [joinGroupId, setJoinGroupId] = useState('');
-  const [groups, setGroups] = useState([]);
+  const [groupName, setGroupName] =
+    useState('');
 
-  // --------------------------------
+  const [joinGroupId, setJoinGroupId] =
+    useState('');
+
+  const [groups, setGroups] =
+    useState([]);
+
+  const [groupProfitMap, setGroupProfitMap] =
+    useState({});
+
+  const [loadingProfits, setLoadingProfits] =
+    useState(false);
+
+
+  // =========================================
   // LOAD GROUPS
-  // --------------------------------
+  // =========================================
 
   const loadGroups = useCallback(async () => {
     if (!user?.id) return;
@@ -36,27 +48,125 @@ export default function Groups({ user }) {
       .eq('user_id', user.id);
 
     if (error) {
-      console.error('Load groups error:', error);
+      console.error(
+        'Load groups error:',
+        error
+      );
+
       return;
     }
 
     setGroups(data || []);
   }, [user?.id]);
 
+
   useEffect(() => {
     loadGroups();
   }, [loadGroups]);
 
-  // --------------------------------
+
+  // =========================================
+  // LOAD PROFIT FOR EACH GROUP
+  // =========================================
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    if (groups.length === 0) {
+      setGroupProfitMap({});
+      return;
+    }
+
+    async function loadGroupProfits() {
+      setLoadingProfits(true);
+
+      const groupIds = groups.map(
+        (item) => item.group_id
+      );
+
+      /*
+        Only load THIS user's sessions
+        that belong to one of their groups.
+      */
+
+      const { data, error } = await supabase
+        .from('poker_sessions')
+        .select(
+          'group_id, pnl'
+        )
+        .eq(
+          'user_id',
+          user.id
+        )
+        .in(
+          'group_id',
+          groupIds
+        );
+
+      if (error) {
+        console.error(
+          'Load group profits error:',
+          error
+        );
+
+        setLoadingProfits(false);
+
+        return;
+      }
+
+      /*
+        Build:
+
+        {
+          groupId1: 250,
+          groupId2: -75,
+          groupId3: 500
+        }
+      */
+
+      const profitMap = {};
+
+      groupIds.forEach((groupId) => {
+        profitMap[groupId] = 0;
+      });
+
+      (data || []).forEach((session) => {
+        if (!session.group_id) return;
+
+        if (
+          profitMap[session.group_id] ===
+          undefined
+        ) {
+          profitMap[session.group_id] = 0;
+        }
+
+        profitMap[session.group_id] +=
+          Number(session.pnl || 0);
+      });
+
+      setGroupProfitMap(profitMap);
+
+      setLoadingProfits(false);
+    }
+
+    loadGroupProfits();
+  }, [groups, user?.id]);
+
+
+  // =========================================
   // CREATE GROUP
-  // --------------------------------
+  // =========================================
 
   async function createGroup() {
-    const trimmedName = groupName.trim();
+    const trimmedName =
+      groupName.trim();
 
     if (!trimmedName) return;
 
-    const { data: newGroup, error } = await supabase
+    const {
+      data: newGroup,
+      error,
+    } = await supabase
       .from('groups')
       .insert({
         name: trimmedName,
@@ -66,12 +176,19 @@ export default function Groups({ user }) {
       .single();
 
     if (error) {
-      console.error('Create group error:', error);
+      console.error(
+        'Create group error:',
+        error
+      );
+
       alert(error.message);
+
       return;
     }
 
-    const { error: memberError } = await supabase
+    const {
+      error: memberError,
+    } = await supabase
       .from('group_members')
       .insert({
         group_id: newGroup.id,
@@ -86,6 +203,7 @@ export default function Groups({ user }) {
       );
 
       alert(memberError.message);
+
       return;
     }
 
@@ -94,27 +212,39 @@ export default function Groups({ user }) {
     await loadGroups();
   }
 
-  // --------------------------------
-  // JOIN MANUALLY
-  // --------------------------------
+
+  // =========================================
+  // JOIN GROUP
+  // =========================================
 
   async function joinGroup() {
-    const groupId = joinGroupId.trim();
+    const groupId =
+      joinGroupId.trim();
 
     if (!groupId) return;
 
-    // Check if already a member
-    const { data: existingMembership } =
-      await supabase
-        .from('group_members')
-        .select('group_id')
-        .eq('group_id', groupId)
-        .eq('user_id', user.id)
-        .maybeSingle();
+    const {
+      data: existingMembership,
+    } = await supabase
+      .from('group_members')
+      .select('group_id')
+      .eq(
+        'group_id',
+        groupId
+      )
+      .eq(
+        'user_id',
+        user.id
+      )
+      .maybeSingle();
 
     if (existingMembership) {
-      alert('You are already in this group.');
+      alert(
+        'You are already in this group.'
+      );
+
       setJoinGroupId('');
+
       return;
     }
 
@@ -127,7 +257,10 @@ export default function Groups({ user }) {
       });
 
     if (error) {
-      console.error('Join group error:', error);
+      console.error(
+        'Join group error:',
+        error
+      );
 
       alert(
         'Could not join this group. Check the group code and try again.'
@@ -141,33 +274,64 @@ export default function Groups({ user }) {
     await loadGroups();
   }
 
-  // --------------------------------
-  // COPY INVITE LINK
-  // --------------------------------
 
-  async function copyInviteLink(groupId) {
+  // =========================================
+  // COPY INVITE LINK
+  // =========================================
+
+  async function copyInviteLink(
+    groupId
+  ) {
+    /*
+      Use your public site instead of
+      window.location.origin so this also
+      works inside the Capacitor iPhone app.
+    */
+
     const inviteLink =
-      `${window.location.origin}/join/${groupId}`;
+      `https://stacked-poker.vercel.app/join/${groupId}`;
 
     try {
       await navigator.clipboard.writeText(
         inviteLink
       );
 
-      alert('Group invite link copied!');
+      alert(
+        'Group invite link copied!'
+      );
     } catch (error) {
       console.error(
         'Copy invite link error:',
         error
       );
 
-      alert('Could not copy the invite link.');
+      alert(
+        'Could not copy the invite link.'
+      );
     }
   }
 
-  // --------------------------------
+
+  // =========================================
+  // FORMAT PROFIT
+  // =========================================
+
+  function formatProfit(amount) {
+    const value =
+      Number(amount || 0);
+
+    const sign =
+      value > 0
+        ? '+'
+        : '';
+
+    return `${sign}$${value.toFixed(2)}`;
+  }
+
+
+  // =========================================
   // ENTER KEY SUPPORT
-  // --------------------------------
+  // =========================================
 
   function handleCreateKeyDown(e) {
     if (e.key === 'Enter') {
@@ -175,18 +339,20 @@ export default function Groups({ user }) {
     }
   }
 
+
   function handleJoinKeyDown(e) {
     if (e.key === 'Enter') {
       joinGroup();
     }
   }
 
-  // --------------------------------
+
+  // =========================================
   // RENDER
-  // --------------------------------
+  // =========================================
 
   return (
-    <div className="page dashboard-page">
+    <div className="page">
       {/* HEADER */}
 
       <div className="page-header">
@@ -202,9 +368,14 @@ export default function Groups({ user }) {
         </div>
       </div>
 
-      {/* CREATE / JOIN */}
+
+      {/* =====================================
+          CREATE / JOIN
+      ===================================== */}
 
       <div className="group-action-grid">
+
+
         {/* CREATE GROUP */}
 
         <div className="group-action-card">
@@ -225,9 +396,13 @@ export default function Groups({ user }) {
             placeholder="e.g. Hard Rock Crew"
             value={groupName}
             onChange={(e) =>
-              setGroupName(e.target.value)
+              setGroupName(
+                e.target.value
+              )
             }
-            onKeyDown={handleCreateKeyDown}
+            onKeyDown={
+              handleCreateKeyDown
+            }
           />
 
           <button
@@ -238,6 +413,7 @@ export default function Groups({ user }) {
             Create Group
           </button>
         </div>
+
 
         {/* JOIN GROUP */}
 
@@ -259,9 +435,13 @@ export default function Groups({ user }) {
             placeholder="Paste group code"
             value={joinGroupId}
             onChange={(e) =>
-              setJoinGroupId(e.target.value)
+              setJoinGroupId(
+                e.target.value
+              )
             }
-            onKeyDown={handleJoinKeyDown}
+            onKeyDown={
+              handleJoinKeyDown
+            }
           />
 
           <button
@@ -274,7 +454,10 @@ export default function Groups({ user }) {
         </div>
       </div>
 
-      {/* MY GROUPS */}
+
+      {/* =====================================
+          MY GROUPS
+      ===================================== */}
 
       <div className="section-hdr">
         <span className="section-label">
@@ -285,6 +468,7 @@ export default function Groups({ user }) {
           {groups.length}
         </span>
       </div>
+
 
       {/* EMPTY */}
 
@@ -302,7 +486,13 @@ export default function Groups({ user }) {
       ) : (
         <div className="groups-list">
           {groups.map((item) => {
-            const group = item.groups;
+            const group =
+              item.groups;
+
+            const profit =
+              groupProfitMap[
+                item.group_id
+              ] || 0;
 
             return (
               <div
@@ -327,15 +517,37 @@ export default function Groups({ user }) {
                       {item.role === 'owner'
                         ? 'Owner'
                         : 'Member'}
-                      {' · '}
-                      {item.group_id.slice(
-                        0,
-                        8
-                      )}
-                      ...
                     </span>
                   </div>
                 </div>
+
+
+                {/* GROUP PROFIT */}
+
+                <div className="group-card-right">
+                  <span
+                    className={`group-profit ${
+                      profit > 0
+                        ? 'positive'
+                        : profit < 0
+                        ? 'negative'
+                        : ''
+                    }`}
+                  >
+                    {loadingProfits
+                      ? '...'
+                      : formatProfit(
+                          profit
+                        )}
+                  </span>
+
+                  <span className="group-profit-label">
+                    Your P&L
+                  </span>
+                </div>
+
+
+                {/* INVITE */}
 
                 <button
                   className="group-copy-btn"
@@ -352,7 +564,9 @@ export default function Groups({ user }) {
                     aria-hidden="true"
                   />
 
-                  <span>Invite</span>
+                  <span>
+                    Invite
+                  </span>
                 </button>
               </div>
             );
