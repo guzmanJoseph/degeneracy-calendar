@@ -8,6 +8,7 @@ import { useData } from './hooks/useData';
 
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import About from './pages/About';
+import Support from './pages/Support';
 
 import Dashboard from './pages/Dashboard';
 import Poker from './pages/Poker';
@@ -84,6 +85,17 @@ const sharedGameCode =
   isSharedGame
     ? pathParts[1]
     : null;
+
+
+/* -----------------------------------------
+   PUBLIC SUPPORT PAGE
+
+   Example:
+   /support
+----------------------------------------- */
+
+const isSupportPage =
+  pathParts[0] === 'support';
 
 
 /* -----------------------------------------
@@ -267,7 +279,9 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [session?.user]);
+  }, [
+    session?.user,
+  ]);
 
 
   /* =========================================
@@ -367,6 +381,21 @@ export default function App() {
 
 
   /* =========================================
+     PUBLIC SUPPORT PAGE
+  ========================================= */
+
+  /*
+    This goes BEFORE login checks so Apple
+    and users can open /support without
+    having a Stacked account.
+  */
+
+  if (isSupportPage) {
+    return <Support />;
+  }
+
+
+  /* =========================================
      PUBLIC SHARED GAME
   ========================================= */
 
@@ -395,6 +424,15 @@ export default function App() {
   /* =========================================
      NOT LOGGED IN
   ========================================= */
+
+  /*
+    /join/... intentionally stays in the URL
+    while the user signs in or creates an
+    account.
+
+    After authentication, the invite effect
+    above handles joining the group.
+  */
 
   if (!session) {
     return <Auth />;
