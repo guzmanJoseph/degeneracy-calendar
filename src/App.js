@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import ResetPassword from './pages/ResetPassword';
 
 import { supabase } from './supabaseClient';
 import Auth from './Auth';
@@ -382,6 +383,9 @@ export default function App() {
     'about',
   ].includes(tab);
 
+  const isResetPasswordPage =
+  pathParts[0] === 'reset-password';
+
 
   /* =========================================
      PUBLIC SUPPORT PAGE
@@ -399,6 +403,10 @@ export default function App() {
 
   if (isPrivacyPage) {
   return <PrivacyPolicy />;
+}
+
+if (isResetPasswordPage) {
+  return <ResetPassword />;
 }
 
 

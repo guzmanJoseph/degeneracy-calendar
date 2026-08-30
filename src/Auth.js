@@ -6,67 +6,170 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleAuth(e) {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     if (isSignUp && password.length < 8) {
       setMessage("Password must be at least 8 characters.");
+      setLoading(false);
       return;
     }
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({ email, password });
-      setMessage(error ? error.message : "Account created. Check your email if confirmation is required.");
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      setMessage(
+        error
+          ? error.message
+          : "Account created. Check your email if confirmation is required."
+      );
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      setMessage(error ? error.message : "Logged in!");
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setMessage(error.message);
+      }
     }
+
+    setLoading(false);
+  }
+
+  async function handleForgotPassword() {
+    setMessage("");
+
+    if (!email) {
+      setMessage("Enter your email first.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `https://stacked-poker.vercel.app/reset-password`,
+    });
+
+    setMessage(
+      error
+        ? error.message
+        : "Password reset link sent. Check your email."
+    );
+
+    setLoading(false);
+  }
+
+  function toggleAuthMode() {
+    setIsSignUp((prev) => !prev);
+    setMessage("");
+    setPassword("");
   }
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <img src="/stacked.png" alt="Degeneracy Tracker logo" className="app-logo" />
 
-        <h1>Stacked</h1>
-        <p className="auth-subtitle">
-          Track profits and losses from your poker sessions with your friends.
-        </p>
+        <div className="auth-brand">
+          <img
+            src="/stacked.png"
+            alt="Stacked logo"
+            className="app-logo"
+          />
+
+          <h1>Stacked</h1>
+
+          <p className="auth-subtitle">
+            Track your sessions, settle up with friends, and see who's really up.
+          </p>
+        </div>
 
         <form onSubmit={handleAuth} className="auth-form">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
 
-          <input
-            type="password"
-            placeholder="Password"
-            minLength="8"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="auth-field">
+            <label htmlFor="email">Email</label>
 
-          <button type="submit" className="auth-primary-btn">
-            {isSignUp ? "Create Account" : "Log In"}
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="auth-field">
+            <div className="auth-password-header">
+              <label htmlFor="password">Password</label>
+
+              {!isSignUp && (
+                <button
+                  type="button"
+                  className="forgot-password-btn"
+                  onClick={handleForgotPassword}
+                >
+                  Forgot password?
+                </button>
+              )}
+            </div>
+
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              minLength="8"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="auth-primary-btn"
+            disabled={loading}
+          >
+            {loading
+              ? "Please wait..."
+              : isSignUp
+              ? "Create Account"
+              : "Log In"}
           </button>
         </form>
 
-        {message && <p className="auth-message">{message}</p>}
+        {message && (
+          <div className="auth-message">
+            {message}
+          </div>
+        )}
 
-        <button
-          className="auth-switch"
-          type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
-        >
-          {isSignUp ? "Already have an account? Log in" : "Need an account? Sign up"}
-        </button>
+        <div className="auth-divider">
+          <span />
+          <p>or</p>
+          <span />
+        </div>
+
+        <p className="auth-switch-text">
+          {isSignUp
+            ? "Already have an account?"
+            : "New to Stacked?"}
+
+          <button
+            type="button"
+            className="auth-switch-btn"
+            onClick={toggleAuthMode}
+          >
+            {isSignUp ? "Log in" : "Create an account"}
+          </button>
+        </p>
       </div>
     </div>
   );
