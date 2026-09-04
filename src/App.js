@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import ResetPassword from './pages/ResetPassword';
+import {
+  initializeAds,
+  showBanner,
+  removeBanner,
+} from './services/admob';
 
 import { supabase } from './supabaseClient';
 import Auth from './Auth';
@@ -159,6 +164,35 @@ export default function App() {
     deletePoker,
     editPoker,
   } = useData(session?.user);
+
+  /* =========================================
+   ADMOB
+========================================= */
+
+useEffect(() => {
+  async function setupAds() {
+    try {
+      const canRequestAds = await initializeAds();
+
+      if (!canRequestAds) {
+        console.log('Ads cannot be requested yet');
+        return;
+      }
+
+      await showBanner();
+    } catch (error) {
+      console.error('AdMob setup error:', error);
+    }
+  }
+
+  setupAds();
+
+  return () => {
+    removeBanner().catch((error) => {
+      console.error('AdMob cleanup error:', error);
+    });
+  };
+}, []);
 
 
   /* =========================================
